@@ -77,7 +77,8 @@ function App(): JSX.Element {
 
       rotateImage(base64Photo, 90, originalFormat, (rotatedDataUrl) => {
         const blob = dataURLtoBlob(rotatedDataUrl);
-        const file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+        const type = blob.type || 'image/jpeg';
+        const file = new File([blob], type, { type: type });
         setPhoto(file);
       });
     } catch (error) {
