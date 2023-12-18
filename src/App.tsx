@@ -1,6 +1,12 @@
-import React, { useCallback, useState } from 'react';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import React, { ChangeEvent, useCallback, useState } from 'react';
 
-function rotateImage(imageBase64, rotation, originalFormat, cb) {
+function rotateImage(
+  imageBase64: string,
+  rotation: number,
+  originalFormat: string,
+  cb: (rotatedImageBase64: string) => void,
+) {
   const img = new Image();
   img.src = imageBase64;
   img.onload = () => {
@@ -19,9 +25,9 @@ function rotateImage(imageBase64, rotation, originalFormat, cb) {
     canvas.height = newHeight;
 
     const ctx = canvas.getContext('2d');
-    ctx.translate(newWidth / 2, newHeight / 2);
-    ctx.rotate(rotation * (Math.PI / 180));
-    ctx.drawImage(img, -img.width / 2, -img.height / 2, img.width, img.height);
+    ctx?.translate(newWidth / 2, newHeight / 2);
+    ctx?.rotate(rotation * (Math.PI / 180));
+    ctx?.drawImage(img, -img.width / 2, -img.height / 2, img.width, img.height);
 
     // Convert the rotated image back to the original format
     const rotatedImageBase64 = canvas.toDataURL(originalFormat);
@@ -30,17 +36,18 @@ function rotateImage(imageBase64, rotation, originalFormat, cb) {
   };
 }
 
-function getBase64(file) {
+function getBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
+    reader.onload = () => resolve(reader.result as string);
     reader.onerror = (error) => reject(error);
   });
 }
 
-function dataURLtoBlob(dataUrl) {
+function dataURLtoBlob(dataUrl: string): Blob {
   const arr = dataUrl.split(',');
+  // @ts-ignore
   const mime = arr[0].match(/:(.*?);/)[1];
   const bstr = atob(arr[1]);
   let n = bstr.length;
@@ -51,10 +58,10 @@ function dataURLtoBlob(dataUrl) {
   return new Blob([u8arr], { type: mime });
 }
 
-function App() {
+function App(): JSX.Element {
   const [photo, setPhoto] = useState<File | null>(null);
 
-  const onInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const onInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const file = e?.target.files?.[0];
     if (file) setPhoto(file);
   }, []);
